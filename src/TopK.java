@@ -223,6 +223,8 @@ public class TopK {
 		//Initialise TopK
 		PriorityQueue<Tuple> result = new PriorityQueue<>();
 		
+		
+		
 		//For each row in the table
 		for (List<IdRating> list : tableContent) {
 			scannedRows++;
