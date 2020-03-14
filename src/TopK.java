@@ -201,73 +201,67 @@ public class TopK {
 	
 	public Stack<Tuple> thresholdAlgo(){
 		
-		//Efficiency counter
 		scannedRows=0;
-		
-		//Need to figure out what this is for
+	
         HashSet<Double> keysSoFar = new HashSet<>();
-        
-        //Custom class which contains double: id and double: rating
+   
 		IdRating curRecord = null;
 		
-		//Need to figure out what this is for
 		Double threshold = 0d;
 		
-		//store all the ratings in a given iteration.
-		//double array with length of 10 (10 criteria)
 		Double ratings[] = new Double[criteria];
 		
-	
-		//Threshold Algorithm 
-		
-		//Initialise TopK
 		PriorityQueue<Tuple> result = new PriorityQueue<>();
 		
+		//For Each row in the table
+		boolean breakCheck = false;
 		
-		
-		//For each row in the table
-		for (List<IdRating> list : tableContent) {
+		for(int i=0;i<totalRows;i++){
 			scannedRows++;
+			if (breakCheck == true) {
+				break;
+			}
 			
-			for (IdRating row : list) {
-				curRecord = row;
-				if (!result.contains(curRecord)) { 
-					Tuple obj1 = createTuple(curRecord.getId());
-					
-					//Get total or actual?
-					Double score1 = obj1.getTotalScores();
-					
-					
+			//foreach cell in the row
+			for (int j = 0; j < tableContent.size(); j++) {
+				
+				curRecord = tableContent.get(j).get(i);
+				Tuple obj1 = this.createTuple(curRecord.getId());
+				ratings[j] = curRecord.getRating();
+				
+				//If TopK does not contain obj1
+				if(!result.contains(obj1)) {
+					double score1 = obj1.totalScore;
+				
 					if (result.size() >= this.k) {
+						//Get the lowest score of all objects in result. 
+						double score2 = result.peek().getTotalScores();
 						
-						//Fix this
-						Double score2 = (double) 3000; // lowest score in TopK obj result.peek();
-						
-						if (score2 < score1) {
-							result.removeIf((Tuple tup) -> tup.getTotalScores() > score2);
+						if(score2 < score1) {
+							//Remove an object whose score is score2 from result
+							result.poll();
 							result.add(obj1);
 						}
-						
-						//check
-						threshold = obj1.getThreshold(V);
-						if (threshold < score2) {
-							break;
+			
+						//Compute the threshold of the current row
+						threshold = this.getThreshold(ratings);					
+						if (threshold < result.peek().getTotalScores()) {
+							breakCheck = true;						
 						}
+						threshold = 0.0;
 						
 					} else {
 						result.add(obj1);
 					}
-				}
+				} 
+				
 			}
 		}
-		
-		
 			
 		Stack<Tuple> s = new Stack<Tuple>();
 		while(!result.isEmpty()){			
 			s.push(result.poll());
 		}
-		
 		return s;
 	}
 	
@@ -315,7 +309,7 @@ public class TopK {
 	        System.out.println("There are "+obj.totalRows+" rows in total, and only "+obj.scannedRows+" rows are scanned");   
 	    	
 	    	totalTime+=endTime - startTime;
-	    	System.out.println("Running time：" + (endTime - startTime) + "ms \n");
+	    	System.out.println("Running time: " + (endTime - startTime) + "ms \n");
 	    }
 	    System.out.println("Average running time:" + totalTime/count + "ms");
     }
