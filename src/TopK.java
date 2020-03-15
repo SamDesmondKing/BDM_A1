@@ -202,20 +202,14 @@ public class TopK {
 	public Stack<Tuple> thresholdAlgo(){
 		
 		scannedRows=0;
-	
         HashSet<Double> keysSoFar = new HashSet<>();
-   
 		IdRating curRecord = null;
-		
 		Double threshold = 0d;
-		
 		Double ratings[] = new Double[criteria];
-		
 		PriorityQueue<Tuple> result = new PriorityQueue<>();
-		
-		//For Each row in the table
 		boolean breakCheck = false;
-		
+
+		//For Each row in the table
 		for(int i=0;i<totalRows;i++){
 			scannedRows++;
 			if (breakCheck == true) {
@@ -231,7 +225,7 @@ public class TopK {
 				
 				//If TopK does not contain obj1
 				if(!result.contains(obj1)) {
-					double score1 = obj1.totalScore;
+					double score1 = obj1.getTotalScores();
 				
 					if (result.size() >= this.k) {
 						//Get the lowest score of all objects in result. 
