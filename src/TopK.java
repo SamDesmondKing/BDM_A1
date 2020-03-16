@@ -212,7 +212,7 @@ public class TopK {
 		//For Each row in the table
 		for(int i=0;i<totalRows;i++){
 			scannedRows++;
-			if (breakCheck == true) {
+			if (breakCheck) {
 				break;
 			}
 			
@@ -242,7 +242,6 @@ public class TopK {
 						if (threshold < result.peek().getTotalScores()) {
 							breakCheck = true;						
 						}
-						threshold = 0.0;
 						
 					} else {
 						result.add(obj1);
