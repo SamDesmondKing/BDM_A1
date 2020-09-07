@@ -220,7 +220,9 @@ public class TopK {
 	
 		//Threshold Algorithm 
 		
-		//Initialise TopK
+		//NOTE - we might need the method getThreshold in this class.
+		
+		//Initialize TopK
 		PriorityQueue<Tuple> result = new PriorityQueue<>();
 		
 		//For each row in the table
@@ -229,37 +231,36 @@ public class TopK {
 			
 			for (IdRating row : list) {
 				curRecord = row;
+				//Check .contains is used correctly here
 				if (!result.contains(curRecord)) { 
-					Tuple obj1 = createTuple(curRecord.getId());
+					Tuple currentObject = createTuple(curRecord.getId());
 					
-					//Get total or actual?
-					Double score1 = obj1.getTotalScores();
-					
+					//Check getTotalScores is working as expected here
+					Double currentObjScore = currentObject.getTotalScores();
 					
 					if (result.size() >= this.k) {
 						
 						//Fix this
-						Double score2 = (double) 3000; // lowest score in TopK obj result.peek();
+						Double lowestScore = (double) 3000; // lowest score in TopK obj result.peek();
 						
-						if (score2 < score1) {
-							result.removeIf((Tuple tup) -> tup.getTotalScores() > score2);
-							result.add(obj1);
+						if (lowestScore < currentObjScore) {
+							//replace lowestScore with currentObjScore
+							//result.removeIf((Tuple tup) -> tup.getTotalScores() > score2);
+							//result.add(obj1);
 						}
 						
-						//check
-						threshold = obj1.getThreshold(V);
-						if (threshold < score2) {
+						//check this works as expected 
+						threshold = currentObject.getThreshold(V);
+						if (threshold < lowestScore) {
 							break;
 						}
 						
 					} else {
-						result.add(obj1);
+						result.add(currentObject);
 					}
 				}
 			}
 		}
-		
-		
 			
 		Stack<Tuple> s = new Stack<Tuple>();
 		while(!result.isEmpty()){			
@@ -313,7 +314,7 @@ public class TopK {
 	        System.out.println("There are "+obj.totalRows+" rows in total, and only "+obj.scannedRows+" rows are scanned");   
 	    	
 	    	totalTime+=endTime - startTime;
-	    	System.out.println("Running time：" + (endTime - startTime) + "ms \n");
+	    	System.out.println("Running time:" + (endTime - startTime) + "ms \n");
 	    }
 	    System.out.println("Average running time:" + totalTime/count + "ms");
     }
